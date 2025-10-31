@@ -1,59 +1,74 @@
-import requests
+import json
 from abc import ABC, abstractmethod
-
+from typing import Any, Dict, List
+import os
+import requests
+from config import DATA_DIR
 
 class ApiAbc(ABC):
+    """Базовый абстрактный класс для API."""
 
     @abstractmethod
-    def connect_api(self):
+    def send_request(self) -> Dict[str, Any]:
+        """Отправляет запрос на получение данных."""
         pass
 
     @abstractmethod
-    def load_vacancies(self):
+    def search_vacancies(self) -> List[Dict[str, Any]]:
+        """Ищет вакансии по указанному запросу."""
         pass
 
 
 class ApiHh(ApiAbc):
     """
-    Класс для работы с API HeadHunter
-
+    Реализация API HeadHunter для поиска вакансий.
     """
-    def __init__(self, name):
-        self.__name = name
-        self.__url = 'https://api.hh.ru'
-        self.headers = {'User-Agent': 'HH-User-Agent'}
-        self.params = {'text': self.__name , 'page': 0, 'per_page': 100}
-        self.vacancies = []
 
-    def connect_api(self):
+    def __init__(self, text):
+        self._text = text
+        self._api_url = 'https://api.hh.ru/vacancies'
+        self.params = {'text': self._text, 'page': 0, 'per_page': 100}
+        self.vacancies = []  # Список вакансий
+
+
+    def __send_request(self) -> Dict[str, Any]:
+        """
+        Выполняет запрос к API и возвращает результат.
+        """
+        response = requests.get(self._api_url, params=self.params)
+        if response.status_code != 200:
+            raise Exception(f'Ошибка при отправке запроса: {response.text}')
+        return response.json()
+
+    def send_request(self) -> Dict[str, Any]:
+        return self.__send_request()
+
+    def search_vacancies(self):
+        """
+        Поиск вакансий по странице за страницей.
+        """
+        json_file = os.path.join(DATA_DIR, 'vacancies.json')
 
         try:
-            while self.params.get('page') != 20:
-                response = requests.get(self.__url + '/vacancies', params=self.params)
-                result = response.json()['items']
-                self.vacancies.extend(result)
-                self.params['page'] += 1
-                result_vacancies = self.vacancies
-            return result_vacancies
+            while True:
+                data = self.send_request()
+                self.vacancies.extend(data.get('items'))
+                next_page = data.get('page') + 1
+                total_pages = data.get('pages')
+                if next_page >= total_pages or not data.get('items'):
+                    break
+
+                # Переходим на следующую страницу
+                self.params['page'] = next_page
+                result_data = data.get('items')
+                with open(json_file, 'w+') as f:
+                    json.dump(result_data, f, indent=4)
+                return result_data
         except Exception as e:
-            print(f'Ошибка при подключении: {e}')
-            return 0
-        else:
-            return 0
+            print(f"Возникла ошибка: {e}")
+            return []
 
-    def load_vacancies(self):
-        # self.params['text'] = text
-        pass
-
-
-if __name__ == "__main__":
-    text_info = ApiHh('оператор').connect_api()
-    print(text_info)
-    connect_info = ApiHh.connect_api
-    print(connect_info)
-    # self.params['name'] = keyword
-    # while self.params.get('page') != 20:
-    #     response = requests.get(self.url + "/areas")
-    #     vacancies = response.json()['items']
-    #     self.vacancies.extend(vacancies)
-    #     self.params['page'] += 1
+# if __name__ == "__main__":
+#     hh_connector = ApiHh('Python')
+#     results = hh_connector.search_vacancies()
+#     print(results)
