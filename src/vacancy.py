@@ -1,8 +1,9 @@
 import json
 import re
-from config import json_file, DATA_DIR
-import os
+
+
 class Vacancy:
+    """Класс для работы с вакансиями"""
 
     __slots__ = ('name_vacancy', 'url_vacancy', 'salary', 'requirements')
     name_vacancy: str

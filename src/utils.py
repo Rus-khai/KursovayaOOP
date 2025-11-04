@@ -1,11 +1,11 @@
 import contextlib
-from config import data_output, json_file
+from config import data_output
 from src.fileworker import FileWorker
 from src.vacancy import Vacancy
 
 
 def create_vacancy_list_file(json_f, filter_words='', salary_range=0, top_n=0) -> list:
-    """Функция принимает путь до json файла с данными полученные от api HH, считывает данные из файла,
+    """Функция принимает путь до json файла с данными полученные от api Hh, считывает данные из файла,
     формирует лист с объектами класса Vacancy, сортирует его и добавляет словарь
     по каждому такому объекту в файл vacancy.json.
     Возвращает список словарей с вакансиями отфильтрованными по критериям"""

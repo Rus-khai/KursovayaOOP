@@ -1,5 +1,5 @@
-
 from src.API import ApiHh
+
 
 def test_send_request_success(mock_get):
     # Регистрация успешной реакции на GET-запрос

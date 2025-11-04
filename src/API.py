@@ -5,6 +5,7 @@ import os
 import requests
 from config import DATA_DIR
 
+
 class ApiAbc(ABC):
     """Базовый абстрактный класс для API."""
 
@@ -29,7 +30,6 @@ class ApiHh(ApiAbc):
         self._api_url = 'https://api.hh.ru/vacancies'
         self.params = {'text': self._text, 'page': 0, 'per_page': 100}
         self.vacancies = []  # Список вакансий
-
 
     def __send_request(self) -> Dict[str, Any]:
         """

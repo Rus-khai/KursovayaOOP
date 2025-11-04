@@ -1,9 +1,6 @@
-
-
 from src.vacancy import Vacancy
-
-
 import pytest
+
 
 # Определение фикстуры для мокирования объекта requests.get
 @pytest.fixture
@@ -12,7 +9,6 @@ def mock_get(requests_mock):
         requests_mock.get(url, status_code=status_code, json=json)
 
     return register_get
-
 
 
 @pytest.fixture
@@ -30,10 +26,9 @@ def vacancy_obj():
 
 @pytest.fixture
 def vacancy_list_obj():
-    vacancy_1 = Vacancy("Python Developer", "<https://hh.ru/vacancy/123456>",
+    vacancy_1 = Vacancy("Python Developer", "https://hh.ru/vacancy/123456>",
                         "90 000-100 000 руб.", "Требования: опыт работы от 3 лет...")
-    vacancy_2 = Vacancy("Python Developer", "<https://hh.ru/vacancy/123456>",
+    vacancy_2 = Vacancy("Python Developer", "https://hh.ru/vacancy/123456>",
                         "110 000-150 000 руб.", "Требования: опыт работы от 3 лет...")
     vacancy_list = [vacancy_1]
-    vacancy_list.append(vacancy_2)
     return vacancy_list
