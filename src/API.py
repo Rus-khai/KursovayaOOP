@@ -43,7 +43,7 @@ class ApiHh(ApiAbc):
     def send_request(self) -> Dict[str, Any]:
         return self.__send_request()
 
-    def search_vacancies(self):
+    def search_vacancies(self) -> list[Any] | None | Any:
         """
         Поиск вакансий по странице за страницей.
         """
